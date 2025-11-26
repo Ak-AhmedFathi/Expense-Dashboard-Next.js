@@ -20,9 +20,14 @@ export function TopNavbar() {
         <div className="flex-1 max-w-md hidden md:block">
           <div className="relative">
             <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+            <label htmlFor="desktop-search" className="sr-only">
+              Search expenses
+            </label>
             <input
+              id="desktop-search"
               type="text"
               placeholder="Search expenses..."
+              aria-label="Search expenses"
               className="w-full pl-10 pr-4 py-2 rounded-lg bg-muted border border-border focus:outline-none focus:ring-2 focus:ring-primary/50 transition"
             />
           </div>
@@ -31,12 +36,20 @@ export function TopNavbar() {
         {/* Right section */}
         <div className="flex items-center gap-4">
           {/* Mobile search trigger */}
-          <button className="md:hidden p-2 hover:bg-muted rounded-lg transition" aria-label="Open search">
+          <button
+            className="md:hidden p-2 hover:bg-muted rounded-lg transition"
+            aria-label="Open search"
+            title="Search"
+          >
             <SearchIcon size={20} className="text-foreground" />
           </button>
 
           {/* Notifications */}
-          <button className="relative p-2 hover:bg-muted rounded-lg transition group" aria-label="Notifications">
+          <button
+            className="relative p-2 hover:bg-muted rounded-lg transition group"
+            aria-label="Notifications"
+            title="Notifications"
+          >
             <BellIcon size={20} className="text-foreground" />
             <span className="absolute top-1 right-1 w-2 h-2 bg-destructive rounded-full animate-pulse" />
           </button>
@@ -46,6 +59,7 @@ export function TopNavbar() {
             onClick={handleToggleTheme}
             className="p-2 hover:bg-muted rounded-lg transition"
             aria-label="Toggle theme"
+            title={isDark ? "Switch to light mode" : "Switch to dark mode"}
           >
             {isDark ? (
               <SunIcon size={20} className="text-foreground" />
