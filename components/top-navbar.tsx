@@ -2,13 +2,17 @@
 
 import { SearchIcon, BellIcon, MoonIcon, SunIcon } from "@/components/icon-components"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
+import { useTheme } from "next-themes"
 
-interface TopNavbarProps {
-  onThemeToggle: () => void
-  currentTheme: "light" | "dark"
-}
+export function TopNavbar() {
+  const { theme, setTheme } = useTheme()
 
-export function TopNavbar({ onThemeToggle, currentTheme }: TopNavbarProps) {
+  const isDark = theme === "dark"
+
+  const handleToggleTheme = () => {
+    setTheme(isDark ? "light" : "dark")
+  }
+
   return (
     <header className="h-16 border-b border-border bg-card sticky top-0 z-30">
       <div className="h-full px-4 lg:px-8 flex items-center justify-between gap-4">
@@ -27,22 +31,26 @@ export function TopNavbar({ onThemeToggle, currentTheme }: TopNavbarProps) {
         {/* Right section */}
         <div className="flex items-center gap-4">
           {/* Mobile search trigger */}
-          <button className="md:hidden p-2 hover:bg-muted rounded-lg transition">
+          <button className="md:hidden p-2 hover:bg-muted rounded-lg transition" aria-label="Open search">
             <SearchIcon size={20} className="text-foreground" />
           </button>
 
           {/* Notifications */}
-          <button className="relative p-2 hover:bg-muted rounded-lg transition group">
+          <button className="relative p-2 hover:bg-muted rounded-lg transition group" aria-label="Notifications">
             <BellIcon size={20} className="text-foreground" />
             <span className="absolute top-1 right-1 w-2 h-2 bg-destructive rounded-full animate-pulse" />
           </button>
 
           {/* Theme switcher */}
-          <button onClick={onThemeToggle} className="p-2 hover:bg-muted rounded-lg transition">
-            {currentTheme === "light" ? (
-              <MoonIcon size={20} className="text-foreground" />
-            ) : (
+          <button
+            onClick={handleToggleTheme}
+            className="p-2 hover:bg-muted rounded-lg transition"
+            aria-label="Toggle theme"
+          >
+            {isDark ? (
               <SunIcon size={20} className="text-foreground" />
+            ) : (
+              <MoonIcon size={20} className="text-foreground" />
             )}
           </button>
 

@@ -7,6 +7,7 @@ import { ChartsSection } from "@/components/charts-section"
 import { AiTipsCard } from "@/components/ai-tips-card"
 import { Button } from "@/components/ui/button"
 import { PlusIcon } from "@/components/icon-components"
+import Link from "next/link"
 
 interface DashboardContentProps {
   sidebarOpen: boolean
@@ -50,10 +51,12 @@ export function DashboardContent({ sidebarOpen }: DashboardContentProps) {
             <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
             <p className="text-muted-foreground mt-1">Welcome back! Here's your expense overview.</p>
           </div>
-          <Button className="w-full md:w-auto gap-2">
-            <PlusIcon size={18} />
-            Add New Expense
-          </Button>
+          <Link href="/add-expense">
+            <Button className="w-full md:w-auto gap-2">
+              <PlusIcon size={18} />
+              Add New Expense
+            </Button>
+          </Link>
         </motion.div>
 
         {/* Analytics Cards */}

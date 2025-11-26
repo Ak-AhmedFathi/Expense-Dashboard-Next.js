@@ -10,6 +10,8 @@ import {
   SettingsIcon,
 } from "@/components/icon-components"
 import { useState } from "react"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
 
 interface SidebarProps {
   isOpen: boolean
@@ -17,14 +19,15 @@ interface SidebarProps {
 }
 
 export function Sidebar({ isOpen, onToggle }: SidebarProps) {
-  const [active, setActive] = useState("dashboard")
+  const pathname = usePathname()
 
   const menuItems = [
-    { id: "dashboard", label: "Dashboard", Icon: LayoutDashboardIcon, href: "#" },
-    { id: "add-expense", label: "Add Expense", Icon: PlusIcon, href: "#" },
-    { id: "analytics", label: "Analytics", Icon: BarChart3Icon, href: "#" },
-    { id: "ai-insights", label: "AI Insights", Icon: ZapIcon, href: "#" },
-    { id: "settings", label: "Settings", Icon: SettingsIcon, href: "#" },
+    { id: "dashboard", label: "Dashboard", Icon: LayoutDashboardIcon, href: "/" },
+    { id: "add-expense", label: "Add Expense", Icon: PlusIcon, href: "/add-expense" },
+    { id: "analytics", label: "Analytics", Icon: BarChart3Icon, href: "/analytics" },
+    { id: "ai-insights", label: "AI Insights", Icon: ZapIcon, href: "/ai-insights" },
+    // optional: settings route later
+    // { id: "settings", label: "Settings", Icon: SettingsIcon, href: "/settings" },
   ]
 
   return (
@@ -55,11 +58,12 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
         {/* Menu items */}
         <nav className="flex-1 px-3 py-6 space-y-2">
           {menuItems.map((item) => {
-            const isActive = active === item.id
+            const isActive = pathname === item.href
+
             return (
-              <button
+              <Link
                 key={item.id}
-                onClick={() => setActive(item.id)}
+                href={item.href}
                 className={cn(
                   "w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200",
                   isActive
@@ -69,7 +73,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
               >
                 <item.Icon size={20} />
                 <span className="text-sm font-medium">{item.label}</span>
-              </button>
+              </Link>
             )
           })}
         </nav>
