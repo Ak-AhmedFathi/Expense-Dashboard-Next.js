@@ -1,31 +1,57 @@
 "use client"
 
 import { motion } from "framer-motion"
+import type { Expense } from "@/components/expenses-provider"
 
-export function SpendingChart() {
-  // Sample data for spending pattern over 30 days
-  const data = [
-    { day: 1, amount: 45 },
-    { day: 2, amount: 52 },
-    { day: 3, amount: 48 },
-    { day: 4, amount: 61 },
-    { day: 5, amount: 55 },
-    { day: 6, amount: 67 },
-    { day: 7, amount: 72 },
-    { day: 8, amount: 65 },
-    { day: 9, amount: 70 },
-    { day: 10, amount: 78 },
-    { day: 11, amount: 82 },
-    { day: 12, amount: 75 },
-    { day: 13, amount: 80 },
-    { day: 14, amount: 85 },
-    { day: 15, amount: 90 },
-    { day: 16, amount: 88 },
-    { day: 17, amount: 92 },
-    { day: 18, amount: 95 },
-    { day: 19, amount: 87 },
-    { day: 20, amount: 91 },
-  ]
+interface SpendingChartProps {
+  readonly expenses: Expense[]
+}
+
+export function SpendingChart({ expenses }: SpendingChartProps) {
+  // Aggregate expenses by day of month (1–20) for a simple 20-day view
+  const dailyTotals: { day: number; amount: number }[] = []
+  const totalsMap: Record<number, number> = {}
+
+  expenses.forEach((expense) => {
+    const d = new Date(expense.date)
+    const day = d.getDate()
+    if (day <= 20) {
+      totalsMap[day] = (totalsMap[day] || 0) + expense.amount
+    }
+  })
+
+  for (let day = 1; day <= 20; day++) {
+    dailyTotals.push({
+      day,
+      amount: totalsMap[day] || 0,
+    })
+  }
+
+  const data =
+    expenses.length === 0
+      ? [
+          { day: 1, amount: 45 },
+          { day: 2, amount: 52 },
+          { day: 3, amount: 48 },
+          { day: 4, amount: 61 },
+          { day: 5, amount: 55 },
+          { day: 6, amount: 67 },
+          { day: 7, amount: 72 },
+          { day: 8, amount: 65 },
+          { day: 9, amount: 70 },
+          { day: 10, amount: 78 },
+          { day: 11, amount: 82 },
+          { day: 12, amount: 75 },
+          { day: 13, amount: 80 },
+          { day: 14, amount: 85 },
+          { day: 15, amount: 90 },
+          { day: 16, amount: 88 },
+          { day: 17, amount: 92 },
+          { day: 18, amount: 95 },
+          { day: 19, amount: 87 },
+          { day: 20, amount: 91 },
+        ]
+      : dailyTotals
 
   const maxAmount = Math.max(...data.map((d) => d.amount))
   const chartHeight = 250
@@ -44,7 +70,7 @@ export function SpendingChart() {
         <div className="flex items-end justify-between gap-1 h-64 bg-muted/30 rounded-lg p-4">
           {data.map((d, idx) => (
             <motion.div
-              key={idx}
+              key={d.day}
               initial={{ height: 0 }}
               animate={{ height: `${(d.amount / maxAmount) * (chartHeight - 20)}px` }}
               transition={{ delay: idx * 0.02, duration: 0.5 }}

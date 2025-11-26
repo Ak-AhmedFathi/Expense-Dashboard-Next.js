@@ -5,14 +5,23 @@ import { Sidebar } from "@/components/sidebar"
 import { TopNavbar } from "@/components/top-navbar"
 import { AddExpenseForm } from "@/components/add-expense-form"
 import { SuccessModal } from "@/components/success-modal"
+import { useExpenses } from "@/components/expenses-provider"
 
 export default function AddExpensePage() {
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [showSuccess, setShowSuccess] = useState(false)
   const [expenseData, setExpenseData] = useState<any>(null)
+  const { addExpense } = useExpenses()
 
   const handleExpenseSubmit = (data: any) => {
-    setExpenseData(data)
+    const created = addExpense({
+      title: data.title,
+      amount: Number.parseFloat(data.amount),
+      category: data.category,
+      date: data.date,
+      notes: data.notes,
+    })
+    setExpenseData(created)
     setShowSuccess(true)
     setTimeout(() => setShowSuccess(false), 3000)
   }

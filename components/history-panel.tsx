@@ -19,9 +19,9 @@ interface Conversation {
 }
 
 interface HistoryPanelProps {
-  conversations: Conversation[]
-  onSelectConversation: (id: string) => void
-  selectedId: string | null
+  readonly conversations: Conversation[]
+  readonly onSelectConversation: (id: string) => void
+  readonly selectedId: string | null
 }
 
 export function HistoryPanel({ conversations, onSelectConversation, selectedId }: HistoryPanelProps) {
@@ -69,22 +69,26 @@ export function HistoryPanel({ conversations, onSelectConversation, selectedId }
             <p className="text-xs text-muted-foreground p-4 text-center">No conversations yet</p>
           ) : (
             conversations.map((conversation) => (
-              <motion.button
+              <motion.div
                 key={conversation.id}
                 whileHover={{ x: 4 }}
-                onClick={() => onSelectConversation(conversation.id)}
-                className={`w-full text-left p-3 rounded-lg transition-all duration-200 group ${
+                className={`w-full rounded-lg transition-all duration-200 group ${
                   selectedId === conversation.id
                     ? "bg-primary/10 border border-primary/30"
                     : "hover:bg-muted border border-transparent"
                 }`}
               >
-                <div className="flex items-start justify-between gap-2">
+                <button
+                  type="button"
+                  onClick={() => onSelectConversation(conversation.id)}
+                  className="w-full text-left p-3 flex items-start justify-between gap-2"
+                >
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-foreground truncate">{conversation.title}</p>
                     <p className="text-xs text-muted-foreground mt-1">{formatDate(conversation.timestamp)}</p>
                   </div>
                   <motion.button
+                    type="button"
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-destructive/10 rounded-md"
@@ -94,8 +98,8 @@ export function HistoryPanel({ conversations, onSelectConversation, selectedId }
                   >
                     <TrashIcon size={16} className="text-destructive" />
                   </motion.button>
-                </div>
-              </motion.button>
+                </button>
+              </motion.div>
             ))
           )}
         </div>

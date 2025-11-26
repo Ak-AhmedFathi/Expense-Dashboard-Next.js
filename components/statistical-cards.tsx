@@ -2,41 +2,63 @@
 
 import { motion } from "framer-motion"
 import { TrendingUpIcon, TrendingDownIcon, TargetIcon } from "@/components/icon-components"
+import type { Expense } from "@/components/expenses-provider"
 
 interface StatisticalCardsProps {
-  selectedCategory: string
-  selectedMonth: Date
+  readonly selectedCategory: string
+  readonly selectedMonth: Date
+  readonly expenses: Expense[]
 }
 
-export function StatisticalCards({ selectedCategory, selectedMonth }: StatisticalCardsProps) {
+export function StatisticalCards({ selectedCategory, selectedMonth, expenses }: StatisticalCardsProps) {
+  const monthExpenses = expenses.filter((expense) => {
+    const d = new Date(expense.date)
+    return d.getFullYear() === selectedMonth.getFullYear() && d.getMonth() === selectedMonth.getMonth()
+  })
+
+  const totalSpent = monthExpenses.reduce((sum, e) => sum + e.amount, 0)
+
+  const daysInMonth = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() + 1, 0).getDate()
+  const avgDaily = totalSpent / daysInMonth || 0
+
+  const totalsByCategory = monthExpenses.reduce<Record<string, number>>((acc, e) => {
+    acc[e.category] = (acc[e.category] || 0) + e.amount
+    return acc
+  }, {})
+
+  const biggestCategoryEntry =
+    Object.entries(totalsByCategory).sort((a, b) => b[1] - a[1])[0] ?? (["N/A", 0] as const)
+
+  const [biggestCategory, biggestCategoryTotal] = biggestCategoryEntry
+
   const stats = [
     {
       label: "Total Spent",
-      value: "$2,450.50",
+      value: `$${totalSpent.toFixed(2)}`,
       icon: TargetIcon,
-      trend: -12,
+      trend: 0,
       color: "from-blue-500 to-blue-600",
     },
     {
       label: "Average Daily",
-      value: "$81.68",
+      value: `$${avgDaily.toFixed(2)}`,
       icon: TrendingUpIcon,
-      trend: 8,
+      trend: 0,
       color: "from-purple-500 to-purple-600",
     },
     {
       label: "Biggest Category",
-      value: "Food",
-      subtitle: "$650.00",
+      value: biggestCategory,
+      subtitle: biggestCategory !== "N/A" ? `$${biggestCategoryTotal.toFixed(2)}` : undefined,
       icon: TrendingDownIcon,
-      trend: -5,
+      trend: 0,
       color: "from-green-500 to-green-600",
     },
     {
       label: "Trend",
-      value: "+12%",
+      value: "—",
       icon: TrendingUpIcon,
-      trend: 12,
+      trend: 0,
       color: "from-orange-500 to-orange-600",
     },
   ]
@@ -45,7 +67,7 @@ export function StatisticalCards({ selectedCategory, selectedMonth }: Statistica
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {stats.map((stat, idx) => (
         <motion.div
-          key={idx}
+          key={stat.label}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: idx * 0.1 }}

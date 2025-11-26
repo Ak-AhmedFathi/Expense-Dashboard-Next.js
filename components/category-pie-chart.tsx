@@ -1,15 +1,53 @@
 "use client"
 
 import { motion } from "framer-motion"
+import type { Expense } from "@/components/expenses-provider"
 
-export function CategoryPieChart() {
-  const categories = [
-    { name: "Food", amount: 650, percentage: 26.5, color: "#EF4444" },
-    { name: "Transport", amount: 450, percentage: 18.4, color: "#3B82F6" },
-    { name: "Shopping", amount: 580, percentage: 23.7, color: "#10B981" },
-    { name: "Bills", amount: 520, percentage: 21.2, color: "#F59E0B" },
-    { name: "Other", amount: 250, percentage: 10.2, color: "#8B5CF6" },
+interface CategoryPieChartProps {
+  readonly expenses: Expense[]
+}
+
+const CATEGORY_COLORS: Record<string, string> = {
+  Food: "#EF4444",
+  Transport: "#3B82F6",
+  Shopping: "#10B981",
+  Bills: "#F59E0B",
+  Health: "#22C55E",
+  Entertainment: "#8B5CF6",
+  Other: "#8B5CF6",
+}
+
+export function CategoryPieChart({ expenses }: CategoryPieChartProps) {
+  const totalsByCategory = expenses.reduce<Record<string, number>>((acc, e) => {
+    acc[e.category] = (acc[e.category] || 0) + e.amount
+    return acc
+  }, {})
+
+  const entries = Object.entries(totalsByCategory)
+
+  const fallbackCategories = [
+    { name: "Food", amount: 650, color: "#EF4444" },
+    { name: "Transport", amount: 450, color: "#3B82F6" },
+    { name: "Shopping", amount: 580, color: "#10B981" },
+    { name: "Bills", amount: 520, color: "#F59E0B" },
+    { name: "Other", amount: 250, color: "#8B5CF6" },
   ]
+
+  const categories =
+    entries.length === 0
+      ? fallbackCategories.map((c) => ({
+          ...c,
+          percentage: (c.amount / fallbackCategories.reduce((s, x) => s + x.amount, 0)) * 100,
+        }))
+      : (() => {
+          const total = entries.reduce((sum, [, amount]) => sum + amount, 0)
+          return entries.map(([name, amount]) => ({
+            name,
+            amount,
+            percentage: (amount / total) * 100,
+            color: CATEGORY_COLORS[name] || "#8B5CF6",
+          }))
+        })()
 
   // Calculate pie chart segments
   let currentAngle = 0
@@ -53,7 +91,7 @@ export function CategoryPieChart() {
 
               return (
                 <motion.path
-                  key={idx}
+                  key={segment.name}
                   d={pathData}
                   fill={segment.color}
                   initial={{ opacity: 0 }}
@@ -73,7 +111,7 @@ export function CategoryPieChart() {
         <div className="grid grid-cols-2 gap-3">
           {categories.map((cat, idx) => (
             <motion.div
-              key={idx}
+              key={cat.name}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: idx * 0.1 }}

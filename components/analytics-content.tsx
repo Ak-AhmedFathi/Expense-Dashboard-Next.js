@@ -8,11 +8,27 @@ import { SpendingChart } from "@/components/spending-chart"
 import { CategoryPieChart } from "@/components/category-pie-chart"
 import { FilterPanel } from "@/components/filter-panel"
 import { DownloadIcon } from "@/components/icon-components"
+import { useExpenses } from "@/components/expenses-provider"
 
-export function AnalyticsContent({ sidebarOpen }: { sidebarOpen: boolean }) {
+export function AnalyticsContent({ sidebarOpen }: { readonly sidebarOpen: boolean }) {
   const [selectedMonth, setSelectedMonth] = useState(new Date())
   const [selectedCategory, setSelectedCategory] = useState("all")
   const [dateRange, setDateRange] = useState({ from: 1, to: 30 })
+  const { expenses } = useExpenses()
+
+  const filteredExpenses = expenses.filter((expense) => {
+    const expenseDate = new Date(expense.date)
+    const sameMonth =
+      expenseDate.getFullYear() === selectedMonth.getFullYear() &&
+      expenseDate.getMonth() === selectedMonth.getMonth()
+
+    const day = expenseDate.getDate()
+    const inRange = day >= dateRange.from && day <= dateRange.to
+
+    const matchesCategory = selectedCategory === "all" || expense.category === selectedCategory
+
+    return sameMonth && inRange && matchesCategory
+  })
 
   const handleExportPDF = () => {
     console.log("[v0] Exporting PDF with month:", selectedMonth, "category:", selectedCategory)
@@ -89,7 +105,11 @@ export function AnalyticsContent({ sidebarOpen }: { sidebarOpen: boolean }) {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="mb-8"
         >
-          <StatisticalCards selectedCategory={selectedCategory} selectedMonth={selectedMonth} />
+          <StatisticalCards
+            selectedCategory={selectedCategory}
+            selectedMonth={selectedMonth}
+            expenses={filteredExpenses}
+          />
         </motion.div>
 
         {/* Charts Section */}
@@ -99,8 +119,8 @@ export function AnalyticsContent({ sidebarOpen }: { sidebarOpen: boolean }) {
           transition={{ duration: 0.5, delay: 0.3 }}
           className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8"
         >
-          <SpendingChart />
-          <CategoryPieChart />
+          <SpendingChart expenses={filteredExpenses} />
+          <CategoryPieChart expenses={filteredExpenses} />
         </motion.div>
       </div>
     </div>

@@ -3,43 +3,20 @@
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { motion } from "framer-motion"
+import { useExpenses } from "@/components/expenses-provider"
 
 export function RecentTransactions() {
-  const transactions = [
-    { id: 1, description: "Coffee Shop", category: "Food", amount: "-$5.50", date: "Today", status: "completed" },
-    {
-      id: 2,
-      description: "Netflix Subscription",
-      category: "Entertainment",
-      amount: "-$15.99",
-      date: "Yesterday",
-      status: "completed",
-    },
-    {
-      id: 3,
-      description: "Gas Station",
-      category: "Transport",
-      amount: "-$45.00",
-      date: "2 days ago",
-      status: "completed",
-    },
-    {
-      id: 4,
-      description: "Restaurant Dinner",
-      category: "Food",
-      amount: "-$68.50",
-      date: "3 days ago",
-      status: "completed",
-    },
-    {
-      id: 5,
-      description: "Gym Membership",
-      category: "Health",
-      amount: "-$50.00",
-      date: "5 days ago",
-      status: "completed",
-    },
-  ]
+  const { expenses } = useExpenses()
+
+  const transactions = expenses
+    .slice(0, 5)
+    .map((expense) => ({
+      id: expense.id,
+      description: expense.title,
+      category: expense.category,
+      amount: `-$${expense.amount.toFixed(2)}`,
+      date: expense.date,
+    }))
 
   const getCategoryColor = (category: string) => {
     const colors: { [key: string]: string } = {
