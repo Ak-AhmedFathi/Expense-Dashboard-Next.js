@@ -29,7 +29,7 @@ export function TopNavbar() {
         {/* Search (desktop) */}
         <div className="flex-1 max-w-md hidden md:block">
           <div className="relative">
-            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+            <SearchIcon size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
             <label htmlFor="desktop-search" className="sr-only">
               Search expenses
             </label>
