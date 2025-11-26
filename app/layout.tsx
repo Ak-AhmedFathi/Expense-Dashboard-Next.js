@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { ExpensesProvider } from "@/components/expenses-provider"
+import { SearchProvider } from "@/components/search-provider"
 
 const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
@@ -40,7 +41,9 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${_geist.className} font-sans antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          <ExpensesProvider>{children}</ExpensesProvider>
+          <ExpensesProvider>
+            <SearchProvider>{children}</SearchProvider>
+          </ExpensesProvider>
         </ThemeProvider>
       </body>
     </html>

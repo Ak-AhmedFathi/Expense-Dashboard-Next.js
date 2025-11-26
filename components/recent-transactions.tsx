@@ -4,11 +4,20 @@ import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { motion } from "framer-motion"
 import { useExpenses } from "@/components/expenses-provider"
+import { useSearch } from "@/components/search-provider"
 
 export function RecentTransactions() {
   const { expenses } = useExpenses()
+  const { query } = useSearch()
+
+  const normalizedQuery = query.trim().toLowerCase()
 
   const transactions = expenses
+    .filter((expense) => {
+      if (!normalizedQuery) return true
+      const haystack = `${expense.title} ${expense.category} ${expense.notes ?? ""}`.toLowerCase()
+      return haystack.includes(normalizedQuery)
+    })
     .slice(0, 5)
     .map((expense) => ({
       id: expense.id,
